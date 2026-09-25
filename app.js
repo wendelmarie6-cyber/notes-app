@@ -1,0 +1,186 @@
+const STORAGE_KEY = "notes-app.notes";
+
+const newNoteButton = document.getElementById("new-note");
+const noteList = document.getElementById("note-list");
+const emptyMessage = document.getElementById("empty-message");
+const editorHint = document.getElementById("editor-hint");
+const editorForm = document.getElementById("editor-form");
+const titleInput = document.getElementById("note-title");
+const bodyInput = document.getElementById("note-body");
+
+let notes = loadNotes();
+let activeId = null;
+
+// Leere Notizen vom letzten Besuch entfernen
+removeEmptyNotes();
+saveNotes();
+render();
+
+// ---------- Daten ----------
+
+function isValidNote(note) {
+  return (
+    note !== null &&
+    typeof note === "object" &&
+    typeof note.id === "string" &&
+    typeof note.title === "string" &&
+    typeof note.body === "string" &&
+    typeof note.updatedAt === "number"
+  );
+}
+
+function loadNotes() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return [];
+    const data = JSON.parse(raw);
+    if (!Array.isArray(data)) return [];
+    return data.filter(isValidNote);
+  } catch (error) {
+    // Kaputte Daten: leer starten statt abstürzen
+    return [];
+  }
+}
+
+function saveNotes() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  } catch (error) {
+    console.error("Notizen konnten nicht gespeichert werden:", error);
+  }
+}
+
+function createId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function isEmpty(note) {
+  return note.title.trim() === "" && note.body.trim() === "";
+}
+
+function findNote(id) {
+  return notes.find((note) => note.id === id) || null;
+}
+
+// Entfernt alle leeren Notizen außer der mit keepId
+function removeEmptyNotes(keepId = null) {
+  notes = notes.filter((note) => note.id === keepId || !isEmpty(note));
+  if (activeId !== null && !findNote(activeId)) {
+    activeId = null;
+  }
+}
+
+// ---------- Aktionen ----------
+
+function createNote() {
+  removeEmptyNotes();
+  const note = { id: createId(), title: "", body: "", updatedAt: Date.now() };
+  notes.push(note);
+  activeId = note.id;
+  saveNotes();
+  render();
+  titleInput.focus();
+}
+
+function openNote(id) {
+  if (id === activeId) return;
+  removeEmptyNotes(id);
+  activeId = id;
+  saveNotes();
+  render();
+}
+
+function deleteNote(id) {
+  if (!confirm("Notiz wirklich löschen?")) return;
+  notes = notes.filter((note) => note.id !== id);
+  if (activeId === id) activeId = null;
+  saveNotes();
+  render();
+}
+
+function updateActiveNote(field, value) {
+  const note = findNote(activeId);
+  if (!note) return;
+  note[field] = value;
+  note.updatedAt = Date.now();
+  saveNotes();
+  renderList();
+}
+
+// ---------- Anzeige ----------
+
+function formatDate(timestamp) {
+  return new Date(timestamp).toLocaleString("de-DE", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+}
+
+function renderList() {
+  noteList.textContent = "";
+  emptyMessage.hidden = notes.length > 0;
+
+  const sorted = [...notes].sort((a, b) => b.updatedAt - a.updatedAt);
+
+  for (const note of sorted) {
+    const item = document.createElement("li");
+    item.className = "note-item";
+    if (note.id === activeId) item.classList.add("active");
+
+    const openButton = document.createElement("button");
+    openButton.type = "button";
+    openButton.className = "note-open";
+    openButton.addEventListener("click", () => openNote(note.id));
+
+    const title = document.createElement("span");
+    title.className = "note-title";
+    if (note.title.trim() === "") {
+      title.textContent = "Ohne Titel";
+      title.classList.add("untitled");
+    } else {
+      title.textContent = note.title;
+    }
+
+    const date = document.createElement("span");
+    date.className = "note-date";
+    date.textContent = formatDate(note.updatedAt);
+
+    openButton.append(title, date);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "btn btn-danger";
+    deleteButton.textContent = "Löschen";
+    deleteButton.addEventListener("click", () => deleteNote(note.id));
+
+    item.append(openButton, deleteButton);
+    noteList.append(item);
+  }
+}
+
+function renderEditor() {
+  const note = findNote(activeId);
+  editorForm.hidden = !note;
+  editorHint.hidden = Boolean(note);
+  titleInput.value = note ? note.title : "";
+  bodyInput.value = note ? note.body : "";
+}
+
+function render() {
+  renderList();
+  renderEditor();
+}
+
+// ---------- Ereignisse ----------
+
+newNoteButton.addEventListener("click", createNote);
+
+titleInput.addEventListener("input", () => updateActiveNote("title", titleInput.value));
+bodyInput.addEventListener("input", () => updateActiveNote("body", bodyInput.value));
+
+titleInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    bodyInput.focus();
+  }
+});

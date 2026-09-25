@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Notizen</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Notizen</h1>
+    <button type="button" id="new-note" class="btn btn-primary">Neue Notiz</button>
+  </header>
+
+  <main class="layout">
+    <section class="sidebar" aria-label="Alle Notizen">
+      <p id="empty-message" class="empty-message" hidden>Noch keine Notizen. Leg oben deine erste an.</p>
+      <ul id="note-list" class="note-list"></ul>
+    </section>
+
+    <section class="editor" aria-label="Notiz bearbeiten">
+      <p id="editor-hint" class="editor-hint">Wähle eine Notiz aus oder leg eine neue an.</p>
+      <div id="editor-form" class="editor-form" hidden>
+        <label for="note-title" class="label">Titel</label>
+        <input type="text" id="note-title" class="input" placeholder="Titel" autocomplete="off">
+        <label for="note-body" class="label">Text</label>
+        <textarea id="note-body" class="input textarea" placeholder="Schreib hier deine Notiz …"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

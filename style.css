@@ -1,0 +1,211 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 17px;
+  line-height: 1.5;
+  color: #1f2328;
+  background: #f4f5f7;
+}
+
+/* Kopfzeile */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem;
+  background: #ffffff;
+  border-bottom: 1px solid #d0d4da;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+/* Buttons */
+.btn {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid #8c959f;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #1f2328;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #eef0f3;
+}
+
+.btn:focus-visible,
+.input:focus-visible,
+.note-open:focus-visible {
+  outline: 3px solid #7aa7ff;
+  outline-offset: 1px;
+}
+
+.btn-primary {
+  background: #1f6feb;
+  border-color: #1a5fcc;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: #1a5fcc;
+}
+
+.btn-danger {
+  color: #b42318;
+  border-color: #e0a9a3;
+  padding: 0.35rem 0.75rem;
+}
+
+.btn-danger:hover {
+  background: #fdecea;
+}
+
+/* Layout */
+.layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sidebar,
+.editor {
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #d0d4da;
+  border-radius: 8px;
+  padding: 0.75rem;
+}
+
+/* Liste */
+.empty-message,
+.editor-hint {
+  margin: 0.5rem;
+  color: #57606a;
+}
+
+.note-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.note-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.25rem;
+  border-radius: 6px;
+}
+
+.note-item + .note-item {
+  margin-top: 0.25rem;
+}
+
+.note-item.active {
+  background: #e7f0ff;
+}
+
+.note-open {
+  flex: 1;
+  min-width: 0;
+  font: inherit;
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.note-open:hover {
+  background: #eef0f3;
+}
+
+.note-item.active .note-open:hover {
+  background: transparent;
+}
+
+.note-title {
+  display: block;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.note-title.untitled {
+  font-style: italic;
+  color: #57606a;
+}
+
+.note-date {
+  display: block;
+  font-size: 0.85rem;
+  color: #57606a;
+}
+
+/* Editor */
+.editor-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #444c56;
+}
+
+.input {
+  width: 100%;
+  font: inherit;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #8c959f;
+  border-radius: 6px;
+  background: #ffffff;
+  color: inherit;
+}
+
+.input + .label {
+  margin-top: 0.75rem;
+}
+
+#note-title {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.textarea {
+  min-height: 50vh;
+  resize: vertical;
+}
+
+/* Schmale Bildschirme: Liste über der Notiz */
+@media (max-width: 700px) {
+  .layout {
+    grid-template-columns: 1fr;
+    padding: 0.75rem;
+  }
+
+  .textarea {
+    min-height: 40vh;
+  }
+}
