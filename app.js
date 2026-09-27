@@ -3,6 +3,8 @@ const STORAGE_KEY = "notes-app.notes";
 const newNoteButton = document.getElementById("new-note");
 const noteList = document.getElementById("note-list");
 const emptyMessage = document.getElementById("empty-message");
+const searchInput = document.getElementById("search");
+const noResults = document.getElementById("no-results");
 const editorHint = document.getElementById("editor-hint");
 const editorForm = document.getElementById("editor-form");
 const titleInput = document.getElementById("note-title");
@@ -10,6 +12,9 @@ const bodyInput = document.getElementById("note-body");
 
 let notes = loadNotes();
 let activeId = null;
+
+// Suche wird nicht gespeichert; manche Browser stellen Feldinhalte beim Neuladen wieder her
+searchInput.value = "";
 
 // Leere Notizen vom letzten Besuch entfernen
 removeEmptyNotes();
@@ -116,13 +121,30 @@ function formatDate(timestamp) {
   });
 }
 
+// Die geöffnete Notiz bleibt immer sichtbar, damit sie beim Anlegen
+// oder Bearbeiten während einer Suche nicht aus der Liste verschwindet
+function matchesSearch(note, query) {
+  if (query === "" || note.id === activeId) return true;
+  return (
+    note.title.toLowerCase().includes(query) ||
+    note.body.toLowerCase().includes(query)
+  );
+}
+
 function renderList() {
   noteList.textContent = "";
   emptyMessage.hidden = notes.length > 0;
 
-  const sorted = [...notes].sort((a, b) => b.updatedAt - a.updatedAt);
+  const rawQuery = searchInput.value.trim();
+  const query = rawQuery.toLowerCase();
+  const visible = [...notes]
+    .filter((note) => matchesSearch(note, query))
+    .sort((a, b) => b.updatedAt - a.updatedAt);
 
-  for (const note of sorted) {
+  noResults.hidden = notes.length === 0 || visible.length > 0;
+  noResults.textContent = `Keine Treffer für „${rawQuery}“.`;
+
+  for (const note of visible) {
     const item = document.createElement("li");
     item.className = "note-item";
     if (note.id === activeId) item.classList.add("active");
@@ -174,6 +196,15 @@ function render() {
 // ---------- Ereignisse ----------
 
 newNoteButton.addEventListener("click", createNote);
+
+searchInput.addEventListener("input", renderList);
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    event.preventDefault();
+    searchInput.value = "";
+    renderList();
+  }
+});
 
 titleInput.addEventListener("input", () => updateActiveNote("title", titleInput.value));
 bodyInput.addEventListener("input", () => updateActiveNote("body", bodyInput.value));

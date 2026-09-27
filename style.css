@@ -93,6 +93,10 @@ body {
 }
 
 /* Liste */
+.search {
+  margin-bottom: 0.5rem;
+}
+
 .empty-message,
 .editor-hint {
   margin: 0.5rem;
