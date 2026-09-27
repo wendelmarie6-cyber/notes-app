@@ -121,10 +121,8 @@ function formatDate(timestamp) {
   });
 }
 
-// Die geöffnete Notiz bleibt immer sichtbar, damit sie beim Anlegen
-// oder Bearbeiten während einer Suche nicht aus der Liste verschwindet
 function matchesSearch(note, query) {
-  if (query === "" || note.id === activeId) return true;
+  if (query === "") return true;
   return (
     note.title.toLowerCase().includes(query) ||
     note.body.toLowerCase().includes(query)
