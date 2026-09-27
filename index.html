@@ -14,7 +14,9 @@
 
   <main class="layout">
     <section class="sidebar" aria-label="Alle Notizen">
+      <input type="search" id="search" class="input search" placeholder="Notizen durchsuchen…" aria-label="Notizen durchsuchen" autocomplete="off">
       <p id="empty-message" class="empty-message" hidden>Noch keine Notizen. Leg oben deine erste an.</p>
+      <p id="no-results" class="empty-message" hidden></p>
       <ul id="note-list" class="note-list"></ul>
     </section>
 
